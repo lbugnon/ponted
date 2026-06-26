@@ -1,0 +1,26 @@
+name: PonTED-XL
+description: 'ProtT5 (prot_t5_xl_half_uniref50-enc, 1024-d) frozen + 1-layer transformer
+  (d=192). Trained on DisProt full linker pool + TED-v0.2 (Boltz-core), 5-partition train/val
+  ensemble.'
+source_run: results/production/prott5_ted
+backbone:
+  id: Rostlab/prot_t5_xl_half_uniref50-enc
+  embed_dim: 1024
+head:
+  name: transformer_lite
+  kernel_size: 5
+  n_outputs: 1
+  num_layers: 1
+  d_model: 192
+  dim_feedforward: 512
+  dropout: 0.2
+input_dim: 1024
+structure_channels: []
+sequence_channels: []
+sequence:
+  variant: none
+binary_threshold: 0.2484
+n_folds: 5
+smoothing:
+  method: median
+  window: 5

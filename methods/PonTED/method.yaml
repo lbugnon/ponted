@@ -1,0 +1,25 @@
+name: PonTED
+description: 'ESM-2 650M frozen + 1-layer transformer (d=192), trained on DisProt
+  full linker pull + TED-v0.2 (Boltz-core labels), 5-partition train/val ensemble.'
+source_run: results/production/esm2_ted
+backbone:
+  id: facebook/esm2_t33_650M_UR50D
+  embed_dim: 1280
+head:
+  name: transformer_lite
+  kernel_size: 5
+  n_outputs: 1
+  num_layers: 1
+  d_model: 192
+  dim_feedforward: 512
+  dropout: 0.2
+input_dim: 1280
+structure_channels: []
+sequence_channels: []
+sequence:
+  variant: none
+binary_threshold: 0.2238
+n_folds: 5
+smoothing:
+  method: median
+  window: 5

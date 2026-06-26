@@ -1,0 +1,33 @@
+name: PonTED-S
+description: 'ESM-2 650M frozen + 1-layer transformer (d=192) + AF2 (1-pLDDT) + 7
+  b2a seq channels, traine on DisProt linker pool 5-partition train/val ensemble.'
+source_run: results/production/esm2_af2_b2a
+backbone:
+  id: facebook/esm2_t33_650M_UR50D
+  embed_dim: 1280
+head:
+  name: transformer_lite
+  kernel_size: 5
+  n_outputs: 1
+  num_layers: 1
+  d_model: 192
+  dim_feedforward: 512
+  dropout: 0.2
+input_dim: 1288
+structure_channels:
+- af2_disorder_proxy
+sequence_channels:
+- seq_hydro_polar_w7
+- seq_ncpr_abs_w5
+- seq_fcr_w5
+- seq_fpro_w5
+- seq_fgly_w5
+- seq_uversky_disprom_w11
+- seq_lowcomplexity_w12
+sequence:
+  variant: b2a
+binary_threshold: 0.1852
+n_folds: 5
+smoothing:
+  method: median
+  window: 5
