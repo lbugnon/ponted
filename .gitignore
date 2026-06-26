@@ -1,3 +1,4 @@
 *.pyc
 sample/emb_*
 sample/af2
+sample/pred_*

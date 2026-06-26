@@ -53,9 +53,12 @@ The heads were trained against these models:
 
 Notes: pLM embeddings are the per-residue `last_hidden_state` with CLS/EOS
 stripped; pLDDT is the CA value / 100. Sequences longer than 1022 tokens are
-embedded in overlapping windows (overlap averaged). For AF2, the FASTA id must
-resolve to a UniProt accession (pass `--id-map <fasta_id>\t<uniprot_acc>` if it
-does not).
+embedded in overlapping windows (overlap averaged).
+
+**AF2 needs a UniProt-id list** (only used in `PonTED-S`). The host supplies the mapping via `--id-map` — a TSV of
+`fasta_id<TAB>uniprot_acc`, one line per sequence, using `-` (or `nan`) where no
+accession is known. Coverage is expected to be **partial**: sequences with no
+accession, or whose accession has no AlphaFold model get no pLDDT file.
 
 ## Prediction
 

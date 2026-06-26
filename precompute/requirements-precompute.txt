@@ -1,6 +1,6 @@
 # Precompute features dependencies (not loaded in the container).
 torch>=2.0
-transformers>=4.30
+transformers>=4.30,<5         # 5.x breaks the ProtT5 SentencePiece tokenizer
 sentencepiece>=0.1.99    # ProtT5 (T5Tokenizer) only
 numpy>=1.23
 requests>=2.28           # compute_af2.py (AlphaFold DB)

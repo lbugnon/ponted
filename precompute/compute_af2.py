@@ -61,9 +61,19 @@ def load_id_map(path: Optional[Path]) -> Dict[str, str]:
     return out
 
 
+_NO_ID = {"", "-", "nan", "na", "none", "null"}
+
+
 def resolve_acc(fasta_id: str, id_map: Dict[str, str]) -> Optional[str]:
+    """UniProt accession for a FASTA id, or None if unknown.
+
+    The host-provided id_map may mark a sequence as having no UniProt id with a
+    sentinel ('-', 'nan', ...); such entries (and unmapped non-accession ids)
+    return None so the sequence is skipped — partial coverage is expected.
+    """
     if fasta_id in id_map:
-        return id_map[fasta_id]
+        acc = id_map[fasta_id].strip()
+        return acc if acc.lower() not in _NO_ID else None
     if UNIPROT_RE.match(fasta_id) or ISOFORM_RE.match(fasta_id):
         return fasta_id
     return None

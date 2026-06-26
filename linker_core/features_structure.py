@@ -7,14 +7,19 @@ Expected per-protein AF2 file, keyed by the FASTA id (organizers precompute it):
   or
     <af2_dir>/<id>.npz           with key "plddt", same shape/range
 
+A MISSING pLDDT file is expected at test time (not every input has a UniProt id
+or an AlphaFold model)
 """
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Dict, List, Optional
 
 import numpy as np
+
+LOG = logging.getLogger("features_structure")
 
 AF2_CHANNEL = "af2_disorder_proxy"
 
@@ -31,8 +36,9 @@ def _af2_precompute_hint(fasta_id: str, af2_dir: Path) -> str:
     )
 
 
-def _load_plddt(fasta_id: str, af2_dir: Path) -> np.ndarray:
-    """Return pLDDT (L,) in [0,1] for `fasta_id`. Raises if the file is absent."""
+def _load_plddt(fasta_id: str, af2_dir: Path) -> Optional[np.ndarray]:
+    """Return pLDDT (L,) in [0,1] for `fasta_id`, or None if no file exists.
+    """
     npy = af2_dir / f"{fasta_id}.npy"
     npz = af2_dir / f"{fasta_id}.npz"
     if npy.is_file():
@@ -43,7 +49,7 @@ def _load_plddt(fasta_id: str, af2_dir: Path) -> np.ndarray:
                 raise FeatureError(f"{npz}: missing 'plddt' key (has {list(fh.keys())})")
             plddt = fh["plddt"].astype(np.float32)
     else:
-        raise FeatureError(_af2_precompute_hint(fasta_id, af2_dir))
+        return None
     plddt = np.asarray(plddt).reshape(-1)
     if plddt.size and float(np.nanmax(plddt)) > 1.5:
         raise FeatureError(
@@ -80,16 +86,6 @@ def build_structure_features(
             f"method needs the AF2 channel but --af2-plddt was not provided.\n"
             + _af2_precompute_hint(fasta_id, Path("<af2-plddt>"))
         )
-    af2_dir = Path(af2_dir)
-
-    plddt = _load_plddt(fasta_id, af2_dir)
-    if plddt.shape[0] != length:
-        raise FeatureError(
-            f"AF2 length {plddt.shape[0]} != sequence length {length} for '{fasta_id}' "
-            "(id/sequence mismatch — the precomputed structure is for a different sequence)."
-        )
-    raw = (1.0 - plddt).astype(np.float32).reshape(length, 1)
-
     if stats is None:
         raise FeatureError(
             f"method uses structure channels but no structure_stats were loaded for '{fasta_id}'."
@@ -100,4 +96,15 @@ def build_structure_features(
         raise FeatureError(
             f"structure_stats has {mean.shape[0]} channels, expected 1 (af2)."
         )
+
+    plddt = _load_plddt(fasta_id, Path(af2_dir))
+    if plddt is None:
+        LOG.warning("AF2 pLDDT missing for '%s' — neutral-filling the structure channel", fasta_id)
+        return np.zeros((length, 1), dtype=np.float32)
+    if plddt.shape[0] != length:
+        raise FeatureError(
+            f"AF2 length {plddt.shape[0]} != sequence length {length} for '{fasta_id}' "
+            "(id/sequence mismatch — the precomputed structure is for a different sequence)."
+        )
+    raw = (1.0 - plddt).astype(np.float32).reshape(length, 1)
     return ((raw - mean[None, :]) / std[None, :]).astype(np.float32)
