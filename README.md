@@ -12,7 +12,7 @@ ensemble**. It was trained on DisProt flexible-linker annotations (334 proteins,
 Here we provide three variants, sharing the head architecture:
 
 | Method | Backbone | Extra channels | Runtime inputs | 
-|---|---|---|---|---|
+|---|---|---|---|
 | `PonTED` | ESM-2 650M | none | `--embeddings esm2_path`  |
 | `PonTED-XL` | ProtT5 | none | `--embeddings prott5_path` |
 | `PonTED-S` | ESM-2 650M | AF2 pLDDT (1) + biophysics (7) | `--embeddings esm2_path --af2-plddt af2_plddt_path` | 
