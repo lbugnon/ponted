@@ -102,19 +102,6 @@ docker run --rm --network none \
   --out /data/output --threads 8
 ```
 
-To build the image from this repo (already done)
-
-```bash
-docker build --network=host -t ponted:caid .
-```
-
-To publish,
-```bash
-docker login
-docker tag ponted:caid <dockerhub-user>/ponted:caid
-docker push <dockerhub-user>/ponted:caid
-```
-
 ### Input arguments
 
 | Flag | Required | Description |
