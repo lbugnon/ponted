@@ -72,19 +72,9 @@ The image is published on Docker Hub. Pull it once:
 docker pull lbugnon/ponted:caid
 ```
 
-```bash
-# ESM-2 base
-docker run --rm --network none \
-  -v $PWD/input.fasta:/data/input.fasta:ro \
-  -v $PWD/emb_esm2:/data/embeddings:ro \
-  -v $PWD/predictions/PonTED:/data/output \
-  lbugnon/ponted:caid --method PonTED \
-  --fasta /data/input.fasta --embeddings /data/embeddings \
-  --out /data/output --threads 8
-```
 
 ```bash
-# ESM-2 structure-aware variant
+# Ponte-S
 docker run --rm --network none \
   -v $PWD/input.fasta:/data/input.fasta:ro \
   -v $PWD/emb_esm2:/data/embeddings:ro \
@@ -96,7 +86,18 @@ docker run --rm --network none \
 ```
 
 ```bash
-# ProtT5 variant
+# PonTED
+docker run --rm --network none \
+  -v $PWD/input.fasta:/data/input.fasta:ro \
+  -v $PWD/emb_esm2:/data/embeddings:ro \
+  -v $PWD/predictions/PonTED:/data/output \
+  lbugnon/ponted:caid --method PonTED \
+  --fasta /data/input.fasta --embeddings /data/embeddings \
+  --out /data/output --threads 8
+```
+
+```bash
+# PonTED-XL
 docker run --rm --network none \
   -v $PWD/input.fasta:/data/input.fasta:ro \
   -v $PWD/emb_prott5:/data/embeddings:ro \
