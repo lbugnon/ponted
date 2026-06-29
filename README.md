@@ -27,6 +27,8 @@ The package is **inference-only**, in two stages:
 2. **Predict** (offline, CPU-only): `predict_caid.py` runs one method over the
    FASTA + precomputed features and writes one `.caid` file per sequence.
 
+The preprint, data and training methods will be released soon. 
+
 ## Precompute inputs (to run by hosts)
 
 Create a conda environment with the precompute dependencies, 
@@ -40,10 +42,10 @@ Then run the processing scripts
 ```bash
 python precompute/compute_esm2.py   --fasta input.fasta --output-dir emb_esm2/    
 python precompute/compute_prott5.py --fasta input.fasta --output-dir emb_prott5/  
-python precompute/compute_af2.py    --fasta input.fasta --output-dir af2/         
+python precompute/compute_af2.py    --fasta input.fasta --output-dir af2/ [--id-map map.tsv]
 ```
 
-Each script writes in `--output-dir` one `<fasta_id>.npy` per sequence. ESM2 is `(L, 1280)`, ProtT5 is `(L, 1024')` and AF2 pLLDT is `(L,)` in `[0,1]`, all float32 values.
+Each script writes in `--output-dir` one `<fasta_id>.npy` per sequence. ESM2 is `(L, 1280)`, ProtT5 is `(L, 1024)` and AF2 pLDDT is `(L,)` in `[0,1]`, all float32 values.
 
 The heads were trained against these models:
 
