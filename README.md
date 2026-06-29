@@ -1,5 +1,7 @@
 # PonTED: flexible-linker predictor
 
+![PonTED — flexible-linker prediction from protein language models and inter-domain context](docs/graphical_abstract.png)
+
 PonTED is a per-residue **flexible-linker** predictor for the [CAID challenge](https://caid.idpcentral.org/challenge).
 Flexible linkers are the disordered segments that bridge folded domains — a
 distinct functional class of disorder in DisProt (`IDPO:0000033`, "flexible
@@ -7,15 +9,15 @@ linker"). These give domains the conformational freedom to move relative to one 
 
 The base method is a small transformer head (~300k params, 1 layer, `d=192`) on top
 of a **frozen** protein-language-model embedding, served as a **5-member
-ensemble**. It was trained on DisProt flexible-linker annotations (334 proteins, release `2025_12`). Extra training data was processed from TED domains, trimming inter-domain spaces to their disordered core using Boltz structural features. One method variant adds an AlphaFold pLDDT channel and 7 lightweight sequence-biophysics channels
+ensemble**. It was trained on DisProt flexible-linker annotations (334 proteins, release `2025_12`). Extra training data was processed from TED domains, trimming inter-domain spaces to their disordered core using Boltz structural features and homology-filtering the resulting linkers against the DisProt set. One method variant (`Ponte-S`) instead adds an AlphaFold pLDDT channel and 7 lightweight sequence-biophysics channels and uses no TED data as baseline.
 
 Here we provide three variants, sharing the head architecture:
 
 | Method | Backbone | Extra channels | Runtime inputs | 
 |---|---|---|---|
+| `Ponte-S` | ESM-2 650M | AF2 pLDDT (1) + biophysics (7) | `--embeddings esm2_path --af2-plddt af2_plddt_path` | 
 | `PonTED` | ESM-2 650M | none | `--embeddings esm2_path`  |
 | `PonTED-XL` | ProtT5 | none | `--embeddings prott5_path` |
-| `PonTED-S` | ESM-2 650M | AF2 pLDDT (1) + biophysics (7) | `--embeddings esm2_path --af2-plddt af2_plddt_path` | 
 
 
 The package is **inference-only**, in two stages:
@@ -55,7 +57,7 @@ Notes: pLM embeddings are the per-residue `last_hidden_state` with CLS/EOS
 stripped; pLDDT is the CA value / 100. Sequences longer than 1022 tokens are
 embedded in overlapping windows (overlap averaged).
 
-**AF2 needs a UniProt-id list** (only used in `PonTED-S`). The host supplies the mapping via `--id-map` — a TSV of
+**AF2 needs a UniProt-id list** (only used in `Ponte-S`). The host supplies the mapping via `--id-map` — a TSV of
 `fasta_id<TAB>uniprot_acc`, one line per sequence, using `-` (or `nan`) where no
 accession is known. Coverage is expected to be **partial**: sequences with no
 accession, or whose accession has no AlphaFold model get no pLDDT file.
@@ -85,8 +87,8 @@ docker run --rm --network none \
   -v $PWD/input.fasta:/data/input.fasta:ro \
   -v $PWD/emb_esm2:/data/embeddings:ro \
   -v $PWD/af2:/data/af2:ro \
-  -v $PWD/predictions/PonTED-S:/data/output \
-  lbugnon/ponted:caid --method PonTED-S \
+  -v $PWD/predictions/Ponte-S:/data/output \
+  lbugnon/ponted:caid --method Ponte-S \
   --fasta /data/input.fasta --embeddings /data/embeddings \
   --af2-plddt /data/af2 --out /data/output --threads 8
 ```

@@ -1,6 +1,6 @@
-name: PonTED-S
-description: 'ESM-2 650M frozen + 1-layer transformer (d=192) + AF2 (1-pLDDT) + 7
-  b2a seq channels, traine on DisProt linker pool 5-partition train/val ensemble.'
+name: Ponte-S
+description: ESM-2 650M frozen + 1-layer transformer (d=192) + AF2 (1-pLDDT) + 7 b2a
+  biophysics channels, no TED. Structure-informed variant.
 source_run: results/production/esm2_af2_b2a
 backbone:
   id: facebook/esm2_t33_650M_UR50D
