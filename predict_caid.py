@@ -11,7 +11,7 @@ one `<fasta_id>.npy` per sequence inside it:
 
     PonTED       --embeddings esm2_folder
     PonTED-XL    --embeddings prott5_folder
-    PonTED-S     --embeddings esm2_folder --af2-plddt af2_folder
+    Ponte-S      --embeddings esm2_folder --af2-plddt af2_folder
 
 The af2 (1) + b2a (7) channels are appended after the PLM block; af2 = 1-pLDDT
 from --af2-plddt, b2a = 7 sequence-biophysics channels computed in-container. All
